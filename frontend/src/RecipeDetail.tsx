@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { parseSteps } from './parseSteps'
+import { StepList } from './StepList'
 
 interface Ingredient {
   name: string
@@ -45,11 +46,7 @@ export function RecipeDetail({ recipeId, onBack }: Props) {
           <li key={i}>{ing.name} — {ing.measure}</li>
         ))}
       </ul>
-      <ol className="step-list">
-        {parseSteps(recipe.instructions).map((step, i) => (
-          <li key={i} className="step-item">{step}</li>
-        ))}
-      </ol>
+      <StepList steps={parseSteps(recipe.instructions)} />
     </div>
   )
 }
