@@ -35,7 +35,7 @@ export function RecipeDetail({ recipeId, onBack }: Props) {
   if (!recipe) return <p>Recipe not found.</p>
 
   return (
-    <div>
+    <div className="recipe-detail">
       <button onClick={onBack}>Back</button>
       <h1>{recipe.name}</h1>
       <img src={recipe.thumbnail} alt={recipe.name} />

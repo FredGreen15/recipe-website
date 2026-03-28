@@ -32,13 +32,15 @@ export function SearchPage({ onSelectRecipe }: Props = {}) {
 
   return (
     <div>
-      <input
-        placeholder="Enter ingredients (e.g. chicken, garlic)"
-        value={ingredients}
-        onChange={e => setIngredients(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-      <button onClick={handleSearch}>Search</button>
+      <div className="search-form">
+        <input
+          placeholder="Enter ingredients (e.g. chicken, garlic)"
+          value={ingredients}
+          onChange={e => setIngredients(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <button onClick={handleSearch}>Search</button>
+      </div>
 
       {loading && <p>Loading...</p>}
 
@@ -46,12 +48,14 @@ export function SearchPage({ onSelectRecipe }: Props = {}) {
         <p>No recipes found — try different ingredients</p>
       )}
 
-      {!loading && recipes.map(recipe => (
-        <div key={recipe.id} onClick={() => onSelectRecipe?.(recipe.id)} style={{ cursor: 'pointer' }}>
-          <img src={recipe.thumbnail} alt={recipe.name} />
-          <p>{recipe.name}</p>
-        </div>
-      ))}
+      <div className="recipe-grid">
+        {!loading && recipes.map(recipe => (
+          <div key={recipe.id} className="recipe-card" onClick={() => onSelectRecipe?.(recipe.id)}>
+            <img src={recipe.thumbnail} alt={recipe.name} />
+            <p>{recipe.name}</p>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
