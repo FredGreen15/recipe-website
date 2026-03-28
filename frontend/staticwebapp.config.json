@@ -1,0 +1,8 @@
+{
+  "routes": [
+    {
+      "route": "/api/*",
+      "rewrite": "https://recipe-website-backend.azurewebsites.net/api/*"
+    }
+  ]
+}

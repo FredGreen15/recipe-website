@@ -20,12 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-anw4a7q#+jo%mm8=39cn23hvdk2@(8rdov$!!)q*1-bpz7m=6u"
+import os
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-anw4a7q#+jo%mm8=39cn23hvdk2@(8rdov$!!)q*1-bpz7m=6u")
 
-ALLOWED_HOSTS = []
+DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
+
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "recipe-website-backend.azurewebsites.net"]
 
 
 # Application definition
@@ -122,4 +123,8 @@ STATIC_URL = "static/"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.azurestaticapps\.net$",
 ]
