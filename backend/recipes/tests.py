@@ -32,6 +32,61 @@ MEALDB_DETAIL_RESPONSE = {
 }
 
 
+MEALDB_GARLIC_RESPONSE = {
+    "meals": [
+        # Teriyaki Chicken appears in both chicken AND garlic results
+        {"idMeal": "52772", "strMeal": "Teriyaki Chicken", "strMealThumb": "https://example.com/teriyaki.jpg"},
+        # Garlic Bread only appears in garlic results
+        {"idMeal": "11111", "strMeal": "Garlic Bread", "strMealThumb": "https://example.com/bread.jpg"},
+    ]
+}
+
+
+class MultiIngredientSearchTest(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    # When searching for multiple ingredients, only recipes containing ALL of them
+    # should be returned. Chicken Handi has chicken but not garlic — it should be excluded.
+    @patch("recipes.views.requests.get")
+    def test_multi_ingredient_returns_intersection(self, mock_get):
+        def fake_mealdb(url):
+            if "i=chicken" in url:
+                return Mock(json=lambda: MEALDB_CHICKEN_RESPONSE)
+            if "i=garlic" in url:
+                return Mock(json=lambda: MEALDB_GARLIC_RESPONSE)
+        mock_get.side_effect = fake_mealdb
+
+        response = self.client.get("/api/recipes/?ingredients=chicken,garlic")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        ids = [r["id"] for r in data]
+        self.assertIn("52772", ids)     # Teriyaki Chicken — in both
+        self.assertNotIn("52795", ids)  # Chicken Handi — chicken only
+        self.assertNotIn("11111", ids)  # Garlic Bread — garlic only
+
+
+    # Each ingredient is fetched and cached independently. Searching chicken,garlic
+    # then chicken alone should only call TheMealDB once for chicken (cache hit).
+    @patch("recipes.views.requests.get")
+    def test_multi_ingredient_caches_each_ingredient_independently(self, mock_get):
+        def fake_mealdb(url):
+            if "i=chicken" in url:
+                return Mock(json=lambda: MEALDB_CHICKEN_RESPONSE)
+            if "i=garlic" in url:
+                return Mock(json=lambda: MEALDB_GARLIC_RESPONSE)
+        mock_get.side_effect = fake_mealdb
+
+        self.client.get("/api/recipes/?ingredients=chicken,garlic")
+        mock_get.reset_mock()
+
+        # Second search — chicken should be a cache hit, no new call
+        self.client.get("/api/recipes/?ingredients=chicken")
+
+        mock_get.assert_not_called()
+
+
 class RecipeDetailTest(TestCase):
     def setUp(self):
         cache.clear()
