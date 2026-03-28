@@ -123,6 +123,8 @@ STATIC_URL = "static/"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://frecipe.org",
+    "https://www.frecipe.org",
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
