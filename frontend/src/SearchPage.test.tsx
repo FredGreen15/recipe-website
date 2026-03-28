@@ -59,6 +59,25 @@ test('shows empty state when no recipes found', async () => {
   )
 })
 
+// Clicking a recipe card should call onSelectRecipe with the recipe's ID
+// so the App can switch to the detail view.
+test('clicking a recipe card calls onSelectRecipe', async () => {
+  mockFetch.mockResolvedValue({
+    json: async () => [
+      { id: '52772', name: 'Teriyaki Chicken', thumbnail: 'https://example.com/t.jpg' },
+    ],
+  })
+  const onSelectRecipe = vi.fn()
+
+  render(<SearchPage onSelectRecipe={onSelectRecipe} />)
+  await userEvent.type(screen.getByPlaceholderText(/ingredients/i), 'chicken')
+  await userEvent.click(screen.getByRole('button', { name: /search/i }))
+  await waitFor(() => screen.getByText('Teriyaki Chicken'))
+  await userEvent.click(screen.getByText('Teriyaki Chicken'))
+
+  expect(onSelectRecipe).toHaveBeenCalledWith('52772')
+})
+
 // Pressing Enter should trigger the search — not just the button click.
 test('pressing Enter triggers search', async () => {
   mockFetch.mockResolvedValue({

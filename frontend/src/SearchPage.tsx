@@ -6,7 +6,11 @@ interface Recipe {
   thumbnail: string
 }
 
-export function SearchPage() {
+interface Props {
+  onSelectRecipe?: (id: string) => void
+}
+
+export function SearchPage({ onSelectRecipe }: Props = {}) {
   const [ingredients, setIngredients] = useState('')
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(false)
@@ -43,7 +47,7 @@ export function SearchPage() {
       )}
 
       {!loading && recipes.map(recipe => (
-        <div key={recipe.id}>
+        <div key={recipe.id} onClick={() => onSelectRecipe?.(recipe.id)} style={{ cursor: 'pointer' }}>
           <img src={recipe.thumbnail} alt={recipe.name} />
           <p>{recipe.name}</p>
         </div>
