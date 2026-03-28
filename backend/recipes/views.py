@@ -28,3 +28,33 @@ def search_recipes(request):
     ]
     cache.set(cache_key, result, timeout=3600)
     return Response(result)
+
+
+@api_view(["GET"])
+def recipe_detail(request, meal_id):
+    cache_key = f"detail:{meal_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return Response(cached)
+
+    url = f"https://www.themealdb.com/api/json/v1/1/lookup.php?i={meal_id}"
+    data = requests.get(url).json()
+    meals = data.get("meals")
+    if not meals:
+        return Response({"error": "Recipe not found"}, status=404)
+
+    m = meals[0]
+    ingredients = [
+        {"name": m[f"strIngredient{i}"], "measure": m[f"strMeasure{i}"]}
+        for i in range(1, 21)
+        if m.get(f"strIngredient{i}")
+    ]
+    result = {
+        "id": m["idMeal"],
+        "name": m["strMeal"],
+        "thumbnail": m["strMealThumb"],
+        "instructions": m["strInstructions"],
+        "ingredients": ingredients,
+    }
+    cache.set(cache_key, result, timeout=3600)
+    return Response(result)

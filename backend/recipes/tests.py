@@ -19,6 +19,62 @@ class HealthCheckTest(TestCase):
         self.assertEqual(response.json(), {"status": "ok"})
 
 
+MEALDB_DETAIL_RESPONSE = {
+    "meals": [{
+        "idMeal": "52772",
+        "strMeal": "Teriyaki Chicken",
+        "strMealThumb": "https://example.com/teriyaki.jpg",
+        "strInstructions": "Mix sauce. Cook chicken. Serve.",
+        "strIngredient1": "Chicken", "strMeasure1": "500g",
+        "strIngredient2": "Soy Sauce", "strMeasure2": "3 tbsp",
+        "strIngredient3": "", "strMeasure3": "",
+    }]
+}
+
+
+class RecipeDetailTest(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    # The core behavior: fetching a recipe by ID returns all the detail the user
+    # needs to cook — name, thumbnail, instructions, and a clean ingredients list.
+    @patch("recipes.views.requests.get")
+    def test_detail_returns_full_recipe(self, mock_get):
+        mock_get.return_value = Mock(json=lambda: MEALDB_DETAIL_RESPONSE)
+
+        response = self.client.get("/api/recipes/52772/")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["id"], "52772")
+        self.assertEqual(data["name"], "Teriyaki Chicken")
+        self.assertEqual(data["instructions"], "Mix sauce. Cook chicken. Serve.")
+        self.assertEqual(data["ingredients"], [
+            {"name": "Chicken",    "measure": "500g"},
+            {"name": "Soy Sauce",  "measure": "3 tbsp"},
+        ])
+
+
+    # If TheMealDB doesn't know the ID, we return 404 so the frontend can handle it cleanly.
+    @patch("recipes.views.requests.get")
+    def test_detail_returns_404_for_unknown_id(self, mock_get):
+        mock_get.return_value = Mock(json=lambda: {"meals": None})
+
+        response = self.client.get("/api/recipes/99999/")
+
+        self.assertEqual(response.status_code, 404)
+
+    # Repeat fetches for the same recipe should come from cache — not TheMealDB.
+    @patch("recipes.views.requests.get")
+    def test_detail_uses_cache_on_repeat_calls(self, mock_get):
+        mock_get.return_value = Mock(json=lambda: MEALDB_DETAIL_RESPONSE)
+
+        self.client.get("/api/recipes/52772/")
+        self.client.get("/api/recipes/52772/")
+
+        mock_get.assert_called_once()
+
+
 class RecipeSearchTest(TestCase):
     def setUp(self):
         cache.clear()
