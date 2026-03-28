@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { parseSteps } from './parseSteps'
 import { StepList } from './StepList'
+import { scaleAmount } from './scaleAmount'
 
 interface Ingredient {
   name: string
@@ -23,6 +24,7 @@ interface Props {
 export function RecipeDetail({ recipeId, onBack }: Props) {
   const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [loading, setLoading] = useState(true)
+  const [servings, setServings] = useState(2)
 
   useEffect(() => {
     fetch(`/api/recipes/${recipeId}/`)
@@ -41,11 +43,23 @@ export function RecipeDetail({ recipeId, onBack }: Props) {
       <button onClick={onBack}>Back</button>
       <h1>{recipe.name}</h1>
       <img src={recipe.thumbnail} alt={recipe.name} />
+      <div className="servings-selector">
+        <label htmlFor="servings">Servings:</label>
+        <select
+          id="servings"
+          value={servings}
+          onChange={e => setServings(Number(e.target.value))}
+        >
+          {[1,2,3,4,5,6].map(n => (
+            <option key={n} value={n}>{n}</option>
+          ))}
+        </select>
+      </div>
       <ul className="ing-list">
         {recipe.ingredients.map((ing, i) => (
           <li key={i} className="ing-row">
             <strong className="ing-name">{ing.name}</strong>
-            <span className="ing-amount">{ing.measure}</span>
+            <span className="ing-amount">{scaleAmount(ing.measure, servings / 2)}</span>
           </li>
         ))}
       </ul>
