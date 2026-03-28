@@ -108,3 +108,58 @@ h1 {
   font-size: 0.95rem;
   white-space: pre-line;
 }
+
+/* Step list */
+.step-list {
+  list-style: none;
+  margin: 1.5rem 0;
+  padding: 0;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  cursor: pointer;
+  transition: opacity 0.2s, font-size 0.2s;
+  user-select: none;
+}
+
+.step-item:active {
+  opacity: 0.7;
+}
+
+.step-check {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: #4caf50;
+  font-weight: bold;
+  margin-top: 0.1rem;
+}
+
+.step-done .step-check {
+  border-color: #4caf50;
+  background: #f0faf0;
+}
+
+/* Completed steps shrink and grey — keeps them visible but moves focus forward */
+.step-done {
+  color: #aaa;
+  font-size: 0.82rem;
+  box-shadow: none;
+  background: #fafafa;
+}
