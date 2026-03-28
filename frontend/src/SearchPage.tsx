@@ -20,7 +20,8 @@ export function SearchPage({ onSelectRecipe }: Props = {}) {
     if (!ingredients.trim()) return
     setLoading(true)
     setSearched(true)
-    const res = await fetch(`/api/recipes/?ingredients=${encodeURIComponent(ingredients)}`)
+    const base = import.meta.env.VITE_API_URL ?? ''
+    const res = await fetch(`${base}/api/recipes/?ingredients=${encodeURIComponent(ingredients)}`)
     const data = await res.json()
     setRecipes(data)
     setLoading(false)

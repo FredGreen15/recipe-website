@@ -27,7 +27,8 @@ export function RecipeDetail({ recipeId, onBack }: Props) {
   const [servings, setServings] = useState(2)
 
   useEffect(() => {
-    fetch(`/api/recipes/${recipeId}/`)
+    const base = import.meta.env.VITE_API_URL ?? ''
+    fetch(`${base}/api/recipes/${recipeId}/`)
       .then(res => res.json())
       .then(data => {
         setRecipe(data)
