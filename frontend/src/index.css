@@ -92,15 +92,30 @@ h1 {
   margin-bottom: 1rem;
 }
 
-.recipe-detail ul {
+.ing-list {
   list-style: none;
   margin: 1rem 0;
 }
 
-.recipe-detail li {
-  padding: 0.3rem 0;
+.ing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.4rem 0;
   border-bottom: 1px solid #eee;
+  gap: 1rem;
+}
+
+.ing-name {
+  font-weight: 600;
   font-size: 0.95rem;
+  color: #222;
+}
+
+.ing-amount {
+  font-size: 0.9rem;
+  color: #888;
+  white-space: nowrap;
 }
 
 .recipe-detail p {

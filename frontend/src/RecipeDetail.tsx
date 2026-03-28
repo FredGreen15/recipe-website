@@ -41,9 +41,12 @@ export function RecipeDetail({ recipeId, onBack }: Props) {
       <button onClick={onBack}>Back</button>
       <h1>{recipe.name}</h1>
       <img src={recipe.thumbnail} alt={recipe.name} />
-      <ul>
+      <ul className="ing-list">
         {recipe.ingredients.map((ing, i) => (
-          <li key={i}>{ing.name} — {ing.measure}</li>
+          <li key={i} className="ing-row">
+            <strong className="ing-name">{ing.name}</strong>
+            <span className="ing-amount">{ing.measure}</span>
+          </li>
         ))}
       </ul>
       <StepList steps={parseSteps(recipe.instructions)} />
