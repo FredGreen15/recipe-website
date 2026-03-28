@@ -15,19 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Log in to Azure
+        uses: azure/login@v2
         with:
-          python-version: '3.12'
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Install dependencies
+      - name: Zip backend folder
         run: |
           cd backend
-          pip install -r requirements.txt
+          zip -r ../deploy.zip . -x "*.pyc" -x "*/__pycache__/*" -x "db.sqlite3"
 
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: recipe-website-backend
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: backend
+        run: |
+          az webapp deploy \
+            --name recipe-website-backend \
+            --resource-group recipe-website-rg \
+            --src-path deploy.zip \
+            --type zip
