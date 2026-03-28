@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-anw4a7q#+jo%mm
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "recipe-website-backend.azurewebsites.net"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,recipe-website-backend.azurewebsites.net").split(",")
 
 
 # Application definition
